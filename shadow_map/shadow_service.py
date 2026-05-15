@@ -1,8 +1,8 @@
 import pybdshadow
 import geopandas as gpd
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+import warnings
+warnings.filterwarnings("ignore")
 
 BUILDINGS_PATH = "./data/buildings.fgb"
 
@@ -37,99 +37,3 @@ class ShadowService:
         ) 
         shadows = shadows.set_crs(crs)
         return shadows
-
-    def plot_shadows(
-        self,
-        dt,
-        intersections=None,
-        route_geom=None,
-        save_path: str | None = None,
-        buffer_factor: float = 0.4,
-    ):
-        fig, ax = plt.subplots(figsize=(12, 12))
-        shadows = self.get_shadows(dt)
-
-        # --- Split shadows ---
-        ground_shadows = shadows[shadows["type"] == "ground"]
-        roof_shadows   = shadows[shadows["type"] == "roof"]
-
-        intersections_list = [gdf for gdf in intersections if gdf is not None and not gdf.empty]
-        merged_intersections = pd.concat(intersections_list) if intersections_list else None
-
-        # --- Plot shadows ---
-        if len(ground_shadows) > 0:
-            ground_shadows.plot(ax=ax, color="#555555", alpha=0.4)
-
-        if len(roof_shadows) > 0:
-            roof_shadows.plot(ax=ax, color="#cc0000", alpha=0.5)
-
-        # --- Plot buildings ---
-        self.buildings.plot(
-            ax=ax,
-            color="#3a86ff",
-            alpha=0.8,
-            edgecolor="white",
-            linewidth=0.5,
-        )
-
-        # --- Plot route ---
-        if route_geom is not None:
-            gpd.GeoSeries(route_geom, crs=shadows.crs).plot(
-                ax=ax,
-                color="black",
-                linewidth=2,
-                linestyle="--",
-                label="Route",
-            )
-
-        # --- Plot intersections ---
-        if merged_intersections is not None and not merged_intersections.empty:
-            merged_intersections.set_geometry("intersection").to_crs(epsg=4326).plot(
-                            ax=ax,
-                            color="yellow",
-                            linewidth=4,
-                            label="Shadow overlap",
-                        )
-
-        # --- Zoom to route area ---
-        if route_geom is not None:
-            all_bounds = [geom.bounds for geom in route_geom]
-            minx = min(b[0] for b in all_bounds)
-            miny = min(b[1] for b in all_bounds)
-            maxx = max(b[2] for b in all_bounds)
-            maxy = max(b[3] for b in all_bounds)
-
-            x_buf = (maxx - minx) * buffer_factor
-            y_buf = (maxy - miny) * buffer_factor
-            ax.set_xlim(minx - x_buf, maxx + x_buf)
-            ax.set_ylim(miny - y_buf, maxy + y_buf)
-
-        # --- Legend ---
-        legend_handles = [
-            mpatches.Patch(color="#3a86ff", alpha=0.8, label="Buildings"),
-            mpatches.Patch(color="#555555", alpha=0.4, label="Ground Shadow"),
-        ]
-
-        if len(roof_shadows) > 0:
-            legend_handles.append(
-                mpatches.Patch(color="#cc0000", alpha=0.5, label="Roof Shadow")
-            )
-
-        if merged_intersections is not None and not merged_intersections.empty:
-            legend_handles.append(
-                mpatches.Patch(color="yellow", label="Shadow overlap")
-            )
-
-        ax.legend(handles=legend_handles, loc="upper right")
-
-        ax.set_title(f"Building Shadow {dt.strftime('%Y-%m-%d %H:%M')}", fontsize=14)
-        ax.set_xlabel("Longitude")
-        ax.set_ylabel("Latitude")
-
-        plt.tight_layout()
-
-        if save_path:
-            plt.savefig(save_path, dpi=150)
-
-        plt.show()
-    
