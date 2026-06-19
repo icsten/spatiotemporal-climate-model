@@ -3,3 +3,5 @@ shapely
 geopandas
 pandas
 pybdshadow
+suncalc
+numpy
