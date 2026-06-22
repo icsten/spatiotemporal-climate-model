@@ -38,7 +38,7 @@ def calculate_sun_positions_min(lat=LAT, lon=LON, year=YEAR):
         az = (deg(float(sun_pos["azimuth"])) + 180) % 360
 
         # Only saving for sun above horizon
-        if alt > 0:
+        if alt >= 2:
             sun_position_table[current.strftime(("%Y-%m-%d %H:%M"))] = (round(az, 4), round(alt, 4))
         
         current += step
