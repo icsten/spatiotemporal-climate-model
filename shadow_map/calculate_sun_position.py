@@ -21,7 +21,7 @@ def calculate_min_max_range(sun_position_table):
 
     print("\nRanges (above-horizon only)")
     print(f"\tAzimuth: {az_min:.4f}°  →  {az_max:.4f}°  (span {az_max - az_min:.2f}°)")
-    print(f"\tAltitude : {alt_min:.4f}°  →  {alt_max:.4f}°  (span {alt_max - alt_min:.2f}°)")   
+    print(f"\tAltitude: {alt_min:.4f}°  →  {alt_max:.4f}°  (span {alt_max - alt_min:.2f}°)")   
 
 def calculate_sun_positions_min(lat=LAT, lon=LON, year=YEAR):
     start = datetime(year, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
@@ -43,11 +43,11 @@ def calculate_sun_positions_min(lat=LAT, lon=LON, year=YEAR):
         
         current += step
 
-    total_minutes   = 365 * 24 * 60
-    above_horizon_minutes   = len(sun_position_table)
+    total_minutes = 365*24*60
+    above_horizon_minutes = len(sun_position_table)
 
-    print(f"\nTotal minutes in 2026  : {total_minutes:,}")
-    print(f"Above-horizon minutes  : {above_horizon_minutes:,}  ({above_horizon_minutes/total_minutes*100:.1f}%)")
+    print(f"\nTotal minutes in 2026: {total_minutes:,}")
+    print(f"Above-horizon minutes: {above_horizon_minutes:,}  ({above_horizon_minutes/total_minutes*100:.1f}%)")
 
     calculate_min_max_range(sun_position_table)
     return sun_position_table
