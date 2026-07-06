@@ -33,7 +33,7 @@ def calculate_sun_positions_min(lat=LAT, lon=LON, year=YEAR):
 
     current = start
     while current < end:
-        sun_pos = get_position(current, lat, lon)
+        sun_pos = get_position(current, lon, lat)
         alt = deg(float(sun_pos["altitude"]))
         az = (deg(float(sun_pos["azimuth"])) + 180) % 360
 

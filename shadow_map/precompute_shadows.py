@@ -76,18 +76,21 @@ def dissolve_shadows_building_id(shadows):
     gdf = gdf.reset_index()
     return gdf
 
-def save_shadow_as_file(shadow, az, alt):
-    file_path = OUTPUT_FOLDER / f"shadow_az_{az}_alt_{alt}.parquet"
-    shadow.to_parquet(file_path, compression="snappy", index=False)
+def save_shadow_as_file(shadow, output_file_path):
+    shadow.to_parquet(output_file_path, compression="snappy", index=False)
 
 def precompute_shadows(buildings, sun_position):
     OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
 
     for az, alt in list_sun_pos:
-        shadows = calculate_shadow(buildings, az, alt)
-        save_shadow_as_file(shadows, az, alt)
-        print(f"Shadow computed for Azimuth {az}° and Altitude {alt}°.")
+        output_file_path = OUTPUT_FOLDER / f"shadow_az_{az}_alt_{alt}.parquet"
 
+        if output_file_path.exists():
+            continue
+
+        shadows = calculate_shadow(buildings, az, alt)
+        save_shadow_as_file(shadows, output_file_path)
+        print(f"Shadow computed for Azimuth {az}° and Altitude {alt}°.")
 
 if __name__ == "__main__":
     # Load buildings and sun position list

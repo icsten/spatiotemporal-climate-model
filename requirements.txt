@@ -5,3 +5,4 @@ pandas
 pybdshadow
 suncalc
 numpy
+scikit-learn
