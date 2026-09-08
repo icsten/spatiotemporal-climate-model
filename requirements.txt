@@ -1,8 +1,14 @@
 lxml
 shapely
 geopandas
+pyarrow
+pyogrio
 pandas
-pybdshadow
-suncalc
 numpy
-scikit-learn
+suncalc
+networkx
+osmnx
+matplotlib
+pythermalcomfort
+thermofeel
+pytest
